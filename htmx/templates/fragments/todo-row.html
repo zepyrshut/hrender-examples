@@ -1,0 +1,10 @@
+<li>
+  <button
+    hx-patch="/todo/{{.ID}}/completed"
+    hx-target="closest li"
+    hx-swap="outerHTML"
+  >
+    {{ .ID }} {{ .Name }} - {{ .Completed }}
+  </button>
+</li>
+
