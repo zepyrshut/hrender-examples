@@ -1,6 +1,6 @@
 <li
   id="todo-{{.ID}}"
-  x-data="{ editing: false, name: '{{.Name}}', backup: '{{.Name}}' }"
+  x-data="{ editing: false, name: '{{.Name}}', backup: '{{.Name}}', error: '' }"
   @htmx:response-error="name = backup; $dispatch('show-toast', 'Error al actualizar. Inténtelo de nuevo.');"
 >
   <div x-show="!editing" @dblclick="editing = true" x-text="name">
@@ -12,16 +12,26 @@
       hx-put="/todo/{{.ID}}/update"
       hx-target="closest li"
       hx-swap="outerHTML"
-      @submit="editing = false"
+      @htmx:before-request="
+        if (name.trim().length <3) {
+      $event.preventDefault();
+      error = 'Debe tener 3 caracteres como mínimo';
+      return;
+      } else {
+      error = '';
+      editing = false;}"
     >
       <input
         type="text"
         name="name"
         value="{{ .Name }}"
         @keydown.escape="name = backup; editing = false"
+        @input="error = ''"
         x-model="name"
         x-init="$el.focus()"
       />
+
+      <span x-show="error" x-text="error"></span>
 
       <button type="button" @click="name =backup; editing = false">
         Cancelar
