@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Lista de tareas</title>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2/dist/htmx.min.js"></script>
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3/dist/cdn.min.js"
+    ></script>
+  </head>
+  <body>
+    <div hx-get="/todo" hx-trigger="load" hx-swap="outerHTML">Cargando...</div>
+
+    <div
+      x-data="{ show: false, message: '' }"
+      @show-toast.window="show = true; message = $event.detail; setTimeout(() => show = false, 3000)"
+      x-show="show"
+    >
+      <span x-text="message"></span>
+    </div>
+  </body>
+</html>

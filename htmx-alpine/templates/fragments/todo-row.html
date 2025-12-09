@@ -1,0 +1,44 @@
+<li
+  id="todo-{{.ID}}"
+  x-data="{ editing: false, name: '{{.Name}}', backup: '{{.Name}}' }"
+  @htmx:response-error="name = backup; $dispatch('show-toast', 'Error al actualizar. Inténtelo de nuevo.');"
+>
+  <div x-show="!editing" @dblclick="editing = true" x-text="name">
+    {{ .Name }} {{ .Completed }}
+  </div>
+
+  <div x-show="editing" style="display: none">
+    <form
+      hx-put="/todo/{{.ID}}/update"
+      hx-target="closest li"
+      hx-swap="outerHTML"
+      @submit="editing = false"
+    >
+      <input
+        type="text"
+        name="name"
+        value="{{ .Name }}"
+        @keydown.escape="name = backup; editing = false"
+        x-model="name"
+        x-init="$el.focus()"
+      />
+
+      <button type="button" @click="name =backup; editing = false">
+        Cancelar
+      </button>
+
+      <button type="submit">Confirmar</button>
+    </form>
+  </div>
+
+  <button x-show="!editing" @click="editing = true">Editar</button>
+
+  <button
+    x-show="!editing"
+    hx-patch="/todo/{{.ID}}/completed"
+    hx-target="closest li"
+    hx-swap="outerHTML"
+  >
+    Completado
+  </button>
+</li>

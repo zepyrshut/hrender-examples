@@ -1,0 +1,9 @@
+<h2>Listado de tareas</h2>
+
+<button hx-get="/todo/new" hx-target="#todo-list-body" hx-swap="afterbegin">
+  Nueva tarea
+</button>
+
+<ol id="todo-list-body">
+  {{ range .TodoList }} {{ template "fragments/todo-row" . }} {{ end }}
+</ol>
