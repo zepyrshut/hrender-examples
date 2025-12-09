@@ -1,0 +1,12 @@
+<li id="new-todo-row">
+  <form data-on-submit="@post('/todo')">
+    <input
+      type="text"
+      name="name"
+      data-bind-newtodo
+      placeholder="Nueva tarea..."
+      autofocus
+    />
+    <button type="submit">enviar</button>
+  </form>
+</li>
