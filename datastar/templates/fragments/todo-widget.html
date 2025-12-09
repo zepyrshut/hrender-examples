@@ -1,0 +1,9 @@
+<div id="todo-container">
+  <h2>Listado de tareas</h2>
+
+  <button data-on-click="@get('/todo/new')">Nueva tarea</button>
+
+  <ol id="todo-list-body">
+    {{ range .TodoList }} {{ template "fragments/todo-row" . }} {{ end }}
+  </ol>
+</div>
