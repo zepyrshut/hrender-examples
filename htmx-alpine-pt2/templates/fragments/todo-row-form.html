@@ -1,0 +1,43 @@
+<form
+  id="create-todo-form"
+  class="flex gap-2 items-start w-full"
+  hx-post="/todo"
+  hx-swap="afterbegin"
+  hx-target="#todo-list-body"
+  hx-target-error="this"
+  x-data="{ 
+    hasError: {{ if .Error }}true{{ else }}false{{ end }} 
+  }"
+  @htmx:after-request="
+    if($event.detail.successful && $event.detail.target.id === 'todo-list-body') {
+        $el.reset(); 
+        hasError = false;
+        creating = false; 
+    }"
+>
+  <div class="flex-grow form-control space-y-1.5">
+    <input
+      type="text"
+      name="name"
+      class="input input-sm input-bordered w-full"
+      :class="{ 'input-error': hasError }"
+      value="{{ .Name }}"
+      placeholder="Escribe tu tarea..."
+      x-init="$el.focus()"
+      @input="hasError = false"
+    />
+    {{ if .Error }}
+    <p class="text-error text-xs" x-show="hasError">{{ .Error }}</p>
+    {{ end }}
+  </div>
+
+  <button
+    type="button"
+    class="btn btn-sm btn-ghost"
+    @click="creating = false; hasError = false; $el.form.reset();"
+  >
+    Cancelar
+  </button>
+
+  <button type="submit" class="btn btn-sm btn-primary">Confirmar</button>
+</form>

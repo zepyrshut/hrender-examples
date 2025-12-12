@@ -1,0 +1,14 @@
+{{ $data := .Data }} {{ $depth := .Depth }} {{ $mapa := $data | toMap }} {{
+$depth | indent }} {{ if $mapa }} {{ $nextDepth := add $depth 1 }}
+
+<ul style="list-style: none">
+  {{ range $key, $value := $mapa }}
+  <li>
+    {{ $nextDepth | indent }}
+    <strong>{{ $key }}:</strong>
+    {{ template "fragments/inspector" (dict "Data" $value "Depth" $nextDepth) }}
+  </li>
+  {{ end }}
+</ul>
+
+{{ else }} {{ $data }} {{ end }}

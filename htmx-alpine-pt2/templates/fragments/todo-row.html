@@ -1,0 +1,72 @@
+<li
+  id="todo-{{.ID}}"
+  class="card bg-base-200 shadow-sm"
+  x-data="{
+    isEditing: false,
+    form: {
+      name: '{{ .Name }}'
+    },
+    cancelEdit() {
+      this.isEditing = false;
+      this.form.name = '{{ .Name }}';
+    }
+  }"
+>
+  <div
+    class="card-body p-4 flex-row items-center justify-between gap-4"
+    x-show="!isEditing"
+  >
+    <div class="flex items-center gap-2 flex-grow">
+      <span class="cursor-pointer"> {{ .Name }} </span>
+    </div>
+
+    <div class="flex gap-2">
+      {{if not .Completed}}
+      <button class="btn btn-sm btn-ghost" @click="isEditing = true">
+        Editar
+      </button>
+      <button
+        class="btn btn-sm btn-secondary"
+        hx-patch="/todo/{{.ID}}/completed"
+        hx-target="closest li"
+        hx-swap="outerHTML"
+      >
+        Completar
+      </button>
+      {{else}}
+      <span
+        class="badge badge-success badge-sm text-white cursor-pointer"
+        hx-patch="/todo/{{.ID}}/completed"
+        hx-target="closest li"
+        hx-swap="outerHTML"
+        hx-trigger="dblclick"
+        >Completado</span
+      >
+      {{ end }}
+    </div>
+  </div>
+
+  <div
+    class="card-body p-4 flex-row items-center justify-between gap-4"
+    x-show="isEditing"
+    style="display: none"
+  >
+    <form
+      class="flex w-full gap-2"
+      hx-put="/todo/{{.ID}}"
+      hx-target="closest li"
+      hx-swap="outerHTML"
+    >
+      <input
+        type="text"
+        name="name"
+        class="input input-sm input-bordered flex-grow"
+        x-model="form.name"
+      />
+      <button type="button" class="btn btn-sm btn-ghost" @click="cancelEdit()">
+        Cancelar
+      </button>
+      <button type="submit" class="btn btn-sm btn-primary">Guardar</button>
+    </form>
+  </div>
+</li>
