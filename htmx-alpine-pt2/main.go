@@ -18,6 +18,7 @@ type TodoList struct {
 	ID        int
 	Name      string
 	Completed bool
+	Error     string
 
 	ui.CRUDActions
 }
@@ -89,7 +90,7 @@ func main() {
 	mux.HandleFunc("/todo", func(w http.ResponseWriter, r *http.Request) {
 		err := r.ParseForm()
 		if err != nil {
-			http.Error(w, "bad request", http.StatusBadRequest)
+			http.Error(w, fmt.Sprintf("error loading template, err: %v", err), http.StatusInternalServerError)
 			return
 		}
 
@@ -99,12 +100,12 @@ func main() {
 		if name == "" {
 			w.Header().Set("HX-Retarget", "#create-todo-form")
 			w.Header().Set("HX-Reswap", "outerHTML")
-			err := h.RenderW(w, "fragments/todo-row-form", hrender.H{
+			err := h.RenderW(w, "fragments/todo-new-form", hrender.H{
 				"Name":  name,
 				"Error": "El nombre es obligatorio",
 			})
 			if err != nil {
-				http.Error(w, "error loading template", http.StatusInternalServerError)
+				http.Error(w, fmt.Sprintf("error loading template, err: %v", err), http.StatusInternalServerError)
 			}
 			return
 		}
@@ -133,7 +134,7 @@ func main() {
 			"Completed": false,
 		})
 		if err != nil {
-			http.Error(w, "error loading template", http.StatusInternalServerError)
+			http.Error(w, fmt.Sprintf("error loading template, err: %v", err), http.StatusInternalServerError)
 		}
 	}, "POST")
 
@@ -141,7 +142,7 @@ func main() {
 		idStr := r.PathValue("id")
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
-			http.Error(w, "invalid id", http.StatusBadRequest)
+			http.Error(w, fmt.Sprintf("error loading template, err: %v", err), http.StatusInternalServerError)
 			return
 		}
 
@@ -155,7 +156,7 @@ func main() {
 		}
 
 		if foundItem == nil {
-			http.Error(w, "item not found", http.StatusNotFound)
+			http.Error(w, fmt.Sprintf("error loading template, err: %v", err), http.StatusInternalServerError)
 			return
 		}
 
@@ -184,6 +185,20 @@ func main() {
 		}
 
 		newName := r.FormValue("name")
+		if newName == "" {
+			w.Header().Set("HX-Retarget", fmt.Sprintf("#todo-edit-form-%d", id))
+			w.Header().Set("HX-Reswap", "outerHTML")
+			err := h.RenderW(w, "fragments/todo-edit-form", hrender.H{
+				"ID":    id,
+				"Name":  newName,
+				"Error": "El nombre es obligatorio",
+			})
+			if err != nil {
+				http.Error(w, "error loading template", http.StatusInternalServerError)
+			}
+			return
+		}
+
 		if newName == "some error" {
 			log.Println("error triggered")
 			http.Error(w, "bad request", http.StatusBadRequest)

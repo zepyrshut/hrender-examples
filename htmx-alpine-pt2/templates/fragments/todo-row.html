@@ -9,6 +9,7 @@
     cancelEdit() {
       this.isEditing = false;
       this.form.name = '{{ .Name }}';
+      this.$dispatch('edit-cancelled');
     }
   }"
 >
@@ -49,24 +50,7 @@
   <div
     class="card-body p-4 flex-row items-center justify-between gap-4"
     x-show="isEditing"
-    style="display: none"
   >
-    <form
-      class="flex w-full gap-2"
-      hx-put="/todo/{{.ID}}"
-      hx-target="closest li"
-      hx-swap="outerHTML"
-    >
-      <input
-        type="text"
-        name="name"
-        class="input input-sm input-bordered flex-grow"
-        x-model="form.name"
-      />
-      <button type="button" class="btn btn-sm btn-ghost" @click="cancelEdit()">
-        Cancelar
-      </button>
-      <button type="submit" class="btn btn-sm btn-primary">Guardar</button>
-    </form>
+    {{ template "fragments/todo-edit-form" . }}
   </div>
 </li>
